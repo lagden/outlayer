@@ -1,5 +1,8 @@
 requirejs.config({
-  baseUrl: '../bower_components'
+  baseUrl: '../bower_components',
+  paths: {
+    TweenMax: './gsap/src/uncompressed/TweenMax'
+  }
   // OR
   // paths: {
   //   eventie: 'bower_components/eventie',
