@@ -1,4 +1,4 @@
-/* global define, require, module, console */
+/* global define, require, module */
 
 /**
  * Outlayer Item
@@ -7,17 +7,6 @@
 ( function( window ) {
 
 'use strict';
-
-// ----- get style ----- //
-
-var getComputedStyle = window.getComputedStyle;
-var getStyle = getComputedStyle ?
-  function( elem ) {
-    return getComputedStyle( elem, null );
-  } :
-  function( elem ) {
-    return elem.currentStyle;
-  };
 
 
 // extend objects
@@ -28,57 +17,10 @@ function extend( a, b ) {
   return a;
 }
 
-// function isEmptyObj( obj ) {
-//   for ( var prop in obj ) {
-//     return false;
-//   }
-//   prop = null;
-//   return true;
-// }
-
-// http://jamesroberts.name/blog/2010/02/22/string-functions-for-javascript-trim-to-camel-case-to-dashed-and-to-underscore/
-// function toDash( str ) {
-//   return str.replace( /([A-Z])/g, function( $1 ){
-//     return '-' + $1.toLowerCase();
-//   });
-// }
-
 // -------------------------- Outlayer definition -------------------------- //
 
-function outlayerItemDefinition( EventEmitter, getSize, getStyleProperty, TweenMax ) {
+function outlayerItemDefinition( EventEmitter, getSize, TweenMax ) {
 
-// -------------------------- CSS3 support -------------------------- //
-
-var transitionProperty = getStyleProperty('transition');
-// var transformProperty = getStyleProperty('transform');
-
-// var transitionEndEvent = {
-//   WebkitTransition: 'webkitTransitionEnd',
-//   MozTransition: 'transitionend',
-//   OTransition: 'otransitionend',
-//   transition: 'transitionend'
-// }[ transitionProperty ];
-
-// properties that could have vendor prefix
-// var prefixableProperties = [
-//   'transform',
-//   'transition',
-//   'transitionDuration',
-//   'transitionProperty'
-// ];
-
-// cache all vendor properties
-// var vendorProperties = ( function() {
-//   var cache = {};
-//   for ( var i=0, len = prefixableProperties.length; i < len; i++ ) {
-//     var prop = prefixableProperties[i];
-//     var supportedProp = getStyleProperty( prop );
-//     if ( supportedProp && supportedProp !== prop ) {
-//       cache[ prop ] = supportedProp;
-//     }
-//   }
-//   return cache;
-// })();
 
 // -------------------------- Item -------------------------- //
 
@@ -140,8 +82,8 @@ Item.prototype.getPosition = function() {
   var isOriginLeft = layoutOptions.isOriginLeft;
   var isOriginTop = layoutOptions.isOriginTop;
 
-  var x = this.element._gsTransform.x
-  var y = this.element._gsTransform.y
+  var x = this.element._gsTransform.x;
+  var y = this.element._gsTransform.y;
 
   // clean up 'auto' or other non-integer values
   x = isNaN( x ) ? 0 : x;
@@ -183,10 +125,6 @@ Item.prototype.layoutPosition = function() {
 
 Item.prototype._transitionTo = function( x, y ) {
   this.getPosition();
-
-  // get current x & y from top/left
-  var curX = this.position.x;
-  var curY = this.position.y;
 
   var compareX = parseInt( x, 10 );
   var compareY = parseInt( y, 10 );
@@ -238,10 +176,7 @@ Item.prototype.setPosition = function( x, y ) {
 // non transition, just trigger callback
 Item.prototype._nonTransition = function( args ) {
   this.css( args.to );
-
-  // for ( var prop in args.onTransitionEnd ) {
-  //   args.onTransitionEnd[ prop ].call( this );
-  // }
+  args.to.onComplete();
 };
 
 /**
@@ -249,8 +184,6 @@ Item.prototype._nonTransition = function( args ) {
  * @param {Object} args - arguments
  *   @param {Object} to - style to transition to
  *   @param {Object} from - style to start transition from
- *   @param {Boolean} isCleaning - removes transition styles after transition
- *   @param {Function} onTransitionEnd - callback
  */
 Item.prototype._transition = function( args ) {
   var duration = parseFloat( this.layout.options.transitionDuration );
@@ -273,145 +206,9 @@ Item.prototype._transition = function( args ) {
       duration,
       args.to
     );
-
-  // var _transition = this._transn;
-  // // keep track of onTransitionEnd callback by css property
-  // for ( var prop in args.onTransitionEnd ) {
-  //   _transition.onEnd[ prop ] = args.onTransitionEnd[ prop ];
-  // }
-  // // keep track of properties that are transitioning
-  // for ( prop in args.to ) {
-  //   _transition.ingProperties[ prop ] = true;
-  //   // keep track of properties to clean up when transition is done
-  //   if ( args.isCleaning ) {
-  //     _transition.clean[ prop ] = true;
-  //   }
-  // }
-
-  // // set from styles
-  // if ( args.from ) {
-  //   this.css( args.from );
-  //   // force redraw. http://blog.alexmaccaw.com/css-transitions
-  //   var h = this.element.offsetHeight;
-  //   // hack for JSHint to hush about unused var
-  //   h = null;
-  // }
-  // // enable transition
-  // this.enableTransition( args.to );
-  // // set styles that are transitioning
-  // this.css( args.to );
-
-  // this.isTransitioning = true;
-
 };
-
-// var itemTransitionProperties = transformProperty && ( toDash( transformProperty ) +
-//   ',opacity' );
-
-// Item.prototype.enableTransition = function(/* style */) {
-//   // only enable if not already transitioning
-//   // bug in IE10 were re-setting transition style will prevent
-//   // transitionend event from triggering
-//   if ( this.isTransitioning ) {
-//     return;
-//   }
-
-//   // make transition: foo, bar, baz from style object
-//   // TODO uncomment this bit when IE10 bug is resolved
-//   // var transitionValue = [];
-//   // for ( var prop in style ) {
-//   //   // dash-ify camelCased properties like WebkitTransition
-//   //   transitionValue.push( toDash( prop ) );
-//   // }
-//   // enable transition styles
-//   // HACK always enable transform,opacity for IE10
-//   this.css({
-//     transitionProperty: itemTransitionProperties,
-//     transitionDuration: this.layout.options.transitionDuration
-//   });
-//   // listen for transition end event
-//   this.element.addEventListener( transitionEndEvent, this, false );
-// };
 
 Item.prototype.transition = Item.prototype._transition;
-
-// ----- events ----- //
-
-// Item.prototype.onwebkitTransitionEnd = function( event ) {
-//   this.ontransitionend( event );
-// };
-
-// Item.prototype.onotransitionend = function( event ) {
-//   this.ontransitionend( event );
-// };
-
-// // properties that I munge to make my life easier
-// var dashedVendorProperties = {
-//   '-webkit-transform': 'transform',
-//   '-moz-transform': 'transform',
-//   '-o-transform': 'transform'
-// };
-
-// Item.prototype.ontransitionend = function( event ) {
-//   // disregard bubbled events from children
-//   if ( event.target !== this.element ) {
-//     return;
-//   }
-//   var _transition = this._transn;
-//   // get property name of transitioned property, convert to prefix-free
-//   var propertyName = dashedVendorProperties[ event.propertyName ] || event.propertyName;
-
-//   // remove property that has completed transitioning
-//   delete _transition.ingProperties[ propertyName ];
-//   // check if any properties are still transitioning
-//   if ( isEmptyObj( _transition.ingProperties ) ) {
-//     // all properties have completed transitioning
-//     this.disableTransition();
-//   }
-//   // clean style
-//   if ( propertyName in _transition.clean ) {
-//     // clean up style
-//     this.element.style[ event.propertyName ] = '';
-//     delete _transition.clean[ propertyName ];
-//   }
-//   // trigger onTransitionEnd callback
-//   if ( propertyName in _transition.onEnd ) {
-//     var onTransitionEnd = _transition.onEnd[ propertyName ];
-//     onTransitionEnd.call( this );
-//     delete _transition.onEnd[ propertyName ];
-//   }
-
-//   this.emitEvent( 'transitionEnd', [ this ] );
-// };
-
-// Item.prototype.disableTransition = function() {
-//   this.removeTransitionStyles();
-//   this.element.removeEventListener( transitionEndEvent, this, false );
-//   this.isTransitioning = false;
-// };
-
-/**
- * removes style property from element
- * @param {Object} style
-**/
-Item.prototype._removeStyles = function( style ) {
-  // clean up transition styles
-  var cleanStyle = {};
-  for ( var prop in style ) {
-    cleanStyle[ prop ] = '';
-  }
-  this.css( cleanStyle );
-};
-
-var cleanTransitionStyle = {
-  transitionProperty: '',
-  transitionDuration: ''
-};
-
-Item.prototype.removeTransitionStyles = function() {
-  // remove transition
-  this.css( cleanTransitionStyle );
-};
 
 // ----- show/hide/remove ----- //
 
@@ -423,7 +220,7 @@ Item.prototype.removeElem = function() {
 
 Item.prototype.remove = function() {
   // just remove element if no transition support or no transition
-  if ( !transitionProperty || !parseFloat( this.layout.options.transitionDuration ) ) {
+  if ( !parseFloat( this.layout.options.transitionDuration ) ) {
     this.removeElem();
     return;
   }
@@ -501,7 +298,6 @@ if ( typeof define === 'function' && define.amd ) {
   define( [
       'eventEmitter/EventEmitter',
       'get-size/get-size',
-      'get-style-property/get-style-property',
       'TweenMax'
     ],
     outlayerItemDefinition );
@@ -510,7 +306,6 @@ if ( typeof define === 'function' && define.amd ) {
   module.exports = outlayerItemDefinition(
     require('wolfy87-eventemitter'),
     require('get-size'),
-    require('desandro-get-style-property'),
     require('gsap')
   );
 } else {
@@ -519,7 +314,6 @@ if ( typeof define === 'function' && define.amd ) {
   window.Outlayer.Item = outlayerItemDefinition(
     window.EventEmitter,
     window.getSize,
-    window.getStyleProperty,
     window.TweenMax
   );
 }
