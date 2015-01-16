@@ -8,6 +8,7 @@
   background: #EEE;
   width: 200px;
   margin-bottom: 1.0em;
+  position: relative;
 }
 
 .item {

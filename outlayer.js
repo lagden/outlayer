@@ -148,6 +148,7 @@ Outlayer.defaults = {
   isOriginTop: true,
   isResizeBound: true,
   isResizingContainer: true,
+
   // item options
   transitionDuration: '0.4s',
 

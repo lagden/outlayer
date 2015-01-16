@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../bower_components/qunit/qunit/qunit.css" />
   <link rel="stylesheet" href="tests.css" />
 
+  <script src="../bower_components/gsap/src/uncompressed/TweenMax.js"></script>
   <script src="../bower_components/eventEmitter/EventEmitter.js"></script>
   <script src="../bower_components/eventie/eventie.js"></script>
   <script src="../bower_components/doc-ready/doc-ready.js"></script>
@@ -38,7 +39,7 @@
   <script src="create.js"></script>
   <script src="layout.js"></script>
   <script src="get-measurements.js"></script>
-  <script src="origin.js"></script>
+  <!-- <script src="origin.js"></script> -->
   <script src="transition-duration.js"></script>
   <script src="container-size.js"></script>
   <script src="destroy.js"></script>
@@ -218,7 +219,7 @@
   <div id="container-size" class="container"></div>
 
   <!-- wrong quote marks for JSON -->
-  <div id="declarative-bad-json" class="container js-cells-by-row" data-cells-by-row-options="{ 'columnWidth': 30 }">
+  <div id="declarative-bad-json" class="container js-cells-by-row" data-cells-by-row-options='{"columnWidth": 30 }'>
     <div class="item w2"></div>
     <div class="item h2"></div>
     <div class="item w2"></div>
