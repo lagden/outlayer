@@ -150,13 +150,15 @@ Outlayer.defaults = {
   isResizingContainer: true,
   // item options
   transitionDuration: '0.4s',
+
+  // GSAP Style
   hiddenStyle: {
     opacity: 0,
-    transform: 'scale(0.001)'
+    scale: 0.001
   },
   visibleStyle: {
     opacity: 1,
-    transform: 'scale(1)'
+    scale: 1
   }
 };
 

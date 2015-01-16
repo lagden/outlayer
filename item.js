@@ -132,13 +132,6 @@ Item.prototype.getSize = function() {
  */
 Item.prototype.css = function( style ) {
   TweenMax.set(this.element, style);
-  // var elemStyle = this.element.style;
-
-  // for ( var prop in style ) {
-  //   // use vendor property if available
-  //   var supportedProp = vendorProperties[ prop ] || prop;
-  //   elemStyle[ supportedProp ] = style[ prop ];
-  // }
 };
 
  // measure position, and sets it
@@ -214,6 +207,7 @@ Item.prototype._transitionTo = function( x, y ) {
         // save end position
         this.setPosition( x, y );
         this.layoutPosition();
+        this.emitEvent( 'transitionEnd', [ this ] );
       }.bind(this)
     }
   };
@@ -279,8 +273,6 @@ Item.prototype._transition = function( args ) {
       duration,
       args.to
     );
-
-  return;
 
   // var _transition = this._transn;
   // // keep track of onTransitionEnd callback by css property
@@ -451,10 +443,15 @@ Item.prototype.reveal = function() {
   this.css({ display: '' });
 
   var options = this.layout.options;
+  var toOption = options.visibleStyle;
+
+  toOption.onComplete = function() {
+    this.emitEvent('transitionEnd', [this]);
+  }.bind(this);
+
   this.transition({
     from: options.hiddenStyle,
-    to: options.visibleStyle,
-    isCleaning: true
+    to: toOption,
   });
 };
 
@@ -465,20 +462,19 @@ Item.prototype.hide = function() {
   this.css({ display: '' });
 
   var options = this.layout.options;
+  var toOption = options.hiddenStyle;
+
+  toOption.onComplete = function() {
+    // check if still hidden
+    // during transition, item may have been un-hidden
+    if ( this.isHidden )
+      this.css({ display: 'none' });
+    this.emitEvent('transitionEnd', [this]);
+  }.bind(this);
+
   this.transition({
     from: options.visibleStyle,
-    to: options.hiddenStyle,
-    // keep hidden stuff hidden
-    isCleaning: true,
-    onTransitionEnd: {
-      opacity: function() {
-        // check if still hidden
-        // during transition, item may have been un-hidden
-        if ( this.isHidden ) {
-          this.css({ display: 'none' });
-        }
-      }
-    }
+    to: toOption
   });
 };
 
